@@ -1,12 +1,12 @@
 ---
-title: ZZZ
+title: Structured data capture from images based on filenames
 identifier: intranda_step_create_structure_from_filenames
 description: Step Plugin for Dubai
 published: false
 ---
 
 ## Introduction
-This documentation explains the plugin for Dubai.
+This documentation explains the plugin for capturing structured data from images based on their filenames.
 
 ## Installation
 To use the plugin, the following files must be installed:
