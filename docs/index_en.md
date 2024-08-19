@@ -1,37 +1,36 @@
 ---
-title: ZZZ
-identifier: intranda_step_ZZZ
-description: Step Plugin for ZZZ
+title: Structure data acquisition of images based on file names
+identifier: intranda_step_create_structure_from_filenames
+description: Step plugin to capture structural data from images
 published: false
 ---
 
 ## Introduction
-This documentation explains the plugin for ZZZ.
+This documentation explains the plugin for capturing structural data from images based on their file names.
 
 ## Installation
 To be able to use the plugin, the following files must be installed:
 
 ```bash
-/opt/digiverso/goobi/plugins/step/plugin-step-ZZZ-base.jar
-/opt/digiverso/goobi/plugins/GUI/plugin-step-ZZZ-gui.jar
-/opt/digiverso/goobi/config/plugin_intranda_step_ZZZ.xml
+/opt/digiverso/goobi/plugins/step/plugin-step-create-structure-from-filenames-base.jar
+/opt/digiverso/goobi/config/plugin_intranda_step_create_structure_from_filenames.xml
 ```
 
-Once the plugin has been installed, it can be selected within the workflow for the respective work steps and thus executed automatically. A workflow could look like the following example:
-
-![Example of a workflow structure](screen1_en.png)
-
-To use the plugin, it must be selected in a workflow step:
-
-![Configuration of the workflow step for using the plugin](screen2_en.png)
-
-
 ## Overview and functionality
-ZZZ
+Once the plugin has been installed and configured, it can be used within a single Goobi step.
 
+To do this, the plugin `intranda_step_create_structure_from_filenames` must be selected within the desired task. The `Automatic task` checkbox can also be selected.
+
+
+![Configuration of the work step for using the plugin](screen1_en.png)
+
+The plugin works as follows within the correctly configured workflow:
+
+* If the plugin has been called within the workflow, it runs through all images in the master folder and creates a new structure element for each image.
+* However, if an image contains a sequence of letters defined in the configuration file in the file name, then this image is added to the last structure element.
 
 ## Configuration
-The plugin is configured in the file `plugin_intranda_step_ZZZ.xml` as shown here:
+The plugin is configured in the file `plugin_intranda_step_create_structure_from_filenames.xml` as shown here:
 
 {{CONFIG_CONTENT}}
 
@@ -39,30 +38,6 @@ The plugin is configured in the file `plugin_intranda_step_ZZZ.xml` as shown her
 
 Parameter               | Explanation
 ------------------------|------------------------------------
-``                      | 
-``                      | 
-``                      | 
-``                      | 
-``                      | 
-``                      | 
-``                      | 
-``                      | 
-``                      | 
-``                      | 
-``                      | 
-``                      | 
-``                      | 
-``                      | 
-``                      | 
-``                      | 
-``                      | 
-``                      | 
-``                      | 
-``                      | 
-``                      | 
-``                      | 
-``                      | 
-``                      | 
-``                      | 
-``                      | 
-``                      | 
+type           | The type for the structure element to be created |
+infix          | The sequence of letters that can appear in the file name, whereby the image is appended to the previous structure element|
+
