@@ -61,8 +61,8 @@ public class CreateStructureFromFilenamesStepPlugin implements IStepPluginVersio
 	private String title = "intranda_step_create_structure_from_filenames";
 	@Getter
 	private Step step;
-	private String structureElementType;
-	private String filenameString;
+	private String type;
+	private String infix;
 	private String returnPath;
 	private Process process;
 	private XMLConfiguration config;
@@ -75,8 +75,8 @@ public class CreateStructureFromFilenamesStepPlugin implements IStepPluginVersio
 
 		// read parameters from correct block in configuration file
 		SubnodeConfiguration myconfig = ConfigPlugins.getProjectAndStepConfig(title, step);
-		structureElementType = myconfig.getString("structureElementType", "Chapter");
-		filenameString = myconfig.getString("filenameString", "_backprint");
+		type = myconfig.getString("type", "Chapter");
+		infix = myconfig.getString("infix", "_backprint");
 		log.info("CreateStructureFromFilenames step plugin initialized");
 	}
 
@@ -139,7 +139,7 @@ public class CreateStructureFromFilenamesStepPlugin implements IStepPluginVersio
 
 			// Go through all filenames in the list
 			for (String fileName : fileList) {
-				int separatorIndex = fileName.indexOf(filenameString);
+				int separatorIndex = fileName.indexOf(infix);
 
 				if (separatorIndex == -1) {
 					// Get or create a list associated with this modifiedFileName in the treeMap
@@ -182,7 +182,7 @@ public class CreateStructureFromFilenamesStepPlugin implements IStepPluginVersio
 
 			// Go through the TreeMap and add each key as a child
 			for (String key : treeMap.keySet()) {
-				DocStruct childStruct = dd.createDocStruct(prefs.getDocStrctTypeByName(structureElementType));
+				DocStruct childStruct = dd.createDocStruct(prefs.getDocStrctTypeByName(type));
 				topstruct.addChild(childStruct);
 
 				// Go through all files

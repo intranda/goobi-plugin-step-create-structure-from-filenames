@@ -1,12 +1,12 @@
 ---
 title: Strukturdatenerfassung von Bildern auf Basis der Dateinamen
 identifier: intranda_step_create_structure_from_filenames
-description: Step Plugin für Dubai
+description: Step Plugin um Strukturdaten von Bildern zu erfassen
 published: false
 ---
 
 ## Einführung
-Diese Dokumentation erläutert das Plugin zur Strukturdatenerfassung von von Bildern basierend auf deren Dateinamen.
+Diese Dokumentation erläutert das Plugin zur Strukturdatenerfassung von Bildern basierend auf deren Dateinamen.
 
 ## Installation
 Um das Plugin nutzen zu können, müssen folgende Dateien installiert werden:
@@ -26,9 +26,8 @@ Dazu muss innerhalb der gewünschten Aufgabe das Plugin `intranda_step_create_st
 
 Die Arbeitsweise des Plugins innerhalb des korrekt konfigurierten Workflows sieht folgendermaßen aus:
 
-* Wenn das Plugin innerhalb des Workflows aufgerufen wurde, durchläuft es alle Bilder des Master-Ordners und legt und für jedes Bild ein neues Strukturelement an
-* Enthält ein Bild im Dateinamen jedoch einen in der Konfigurationsdatei definierten String, dann wird dieses Bild dem letzten Strukturelement hinzugefügt
-
+* Wenn das Plugin innerhalb des Workflows aufgerufen wurde, durchläuft es alle Bilder des Master-Ordners und legt für jedes Bild ein neues Strukturelement an.
+* Enthält ein Bild im Dateinamen jedoch einen in der Konfigurationsdatei definierten Buchstabenfolge, dann wird dieses Bild dem letzten Strukturelement hinzugefügt.
 
 ## Konfiguration
 Die Konfiguration des Plugins erfolgt in der Datei `plugin_intranda_step_create_structure_from_filenames.xml` wie hier aufgezeigt:
@@ -39,6 +38,6 @@ Die Konfiguration des Plugins erfolgt in der Datei `plugin_intranda_step_create_
 
 Parameter               | Erläuterung
 ------------------------|------------------------------------
-structureElementType    | Der Strukturelementtyp der angelegt werden soll |
-filenameString          | Die Buchstabenfolge, die im Dateinamen vorkommen kann, wodurch das Bild an das vorherige Strukturelement gehängt wird|
+type           | Der Typ für das Strukturelement das angelegt werden soll |
+infix          | Die Buchstabenfolge, die im Dateinamen vorkommen kann, wodurch das Bild an das vorherige Strukturelement gehängt wird|
 

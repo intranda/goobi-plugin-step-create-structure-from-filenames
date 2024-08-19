@@ -13,10 +13,10 @@
         <step>*</step>
         
         <!-- Configuration for structure element type -->
-        <structureElementType>Chapter</structureElementType>
+        <type>Chapter</type>
         
         <!-- Configuration for filename string -->
-        <filenameString>_backprint</filenameString>
+        <infix>_backprint</infix>
     </config>
 
 </config_plugin>
