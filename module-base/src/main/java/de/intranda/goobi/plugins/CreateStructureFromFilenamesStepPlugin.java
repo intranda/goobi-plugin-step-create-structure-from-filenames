@@ -131,7 +131,7 @@ public class CreateStructureFromFilenamesStepPlugin implements IStepPluginVersio
 		TreeMap<String, List<String>> treeMap = new TreeMap<String, List<String>>();
 
 		try {
-			// Get the directory and print it on the console
+			// Get the directory
 			foldername = process.getImagesOrigDirectory(false);
 
 			// Get the names of the folders and sort them in a list
