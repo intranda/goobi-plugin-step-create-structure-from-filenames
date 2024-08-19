@@ -1,7 +1,7 @@
 ---
 title: Structured data capture from images based on filenames
 identifier: intranda_step_create_structure_from_filenames
-description: Step Plugin for capturing struced data from images
+description: Step Plugin for capturing structured data from images
 published: false
 ---
 
@@ -25,8 +25,8 @@ To do so, the plugin `intranda_step_create_structure_from_filenames` must be sel
 
 The plugin works as follows within a properly configured workflow:
 
-* When the plugin is called within the workflow, it processes all images in the master folder and creates a new * structural element for each image.
-* However, if an image filename contains a string defined in the configuration file, that image will be added to the last structural element.
+- When the plugin is called within the workflow, it processes all images in the master folder and creates a new * structural element for each image.
+- However, if an image filename contains a string defined in the configuration file, that image will be added to the last structural element.
 
 
 ## Configuration
@@ -36,7 +36,7 @@ The configuration of the plugin is done in the file `plugin_intranda_step_create
 
 {{CONFIG_DESCRIPTION_PROJECT_STEP}}
 
-| Parameter            | Description                                                                                      |
-|----------------------|--------------------------------------------------------------------------------------------------|
-| type | The type of structure element that should be created                                              |
-| infix       | The sequence of letters that can appear in the filename, causing the image to be attached to the previous structure element |
+| Parameter  | Description                                                                                       |
+|------------|---------------------------------------------------------------------------------------------------|
+| type       | The type of structure element that should be created                                              |
+| infix      | The sequence of letters that can appear in the filename, causing the image to be attached to the previous structure element |
