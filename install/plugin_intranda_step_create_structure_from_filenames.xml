@@ -12,10 +12,11 @@
         <project>*</project>
         <step>*</step>
         
-        <!-- sample parameter -->
-        <value>test</value>
-        <!-- display button to finish the task directly from within the entered plugin -->
-        <allowTaskFinishButtons>true</allowTaskFinishButtons>
+        <!-- Configuration for structure element type -->
+        <type>Chapter</type>
+        
+        <!-- Configuration for filename string -->
+        <infix>_backprint</infix>
     </config>
 
 </config_plugin>
