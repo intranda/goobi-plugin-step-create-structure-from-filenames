@@ -12,7 +12,7 @@ More information about the functionality of this plugin and the complete documen
 
 Detail                      | Description
 --------------------------- | ----------------------
-**Plugin identifier**       | intranda_step_ZZZ
+**Plugin identifier**       | intranda_step_create_structure_from_filenames
 **Plugin type**             | step
 **Licence**                 | GPL 2.0 or newer
 **Documentation (German)**  | https://docs.goobi.io/workflow-plugins/v/eng/step/goobi-plugin-step-create-structure-from-filenames
