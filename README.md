@@ -15,8 +15,8 @@ Detail                      | Description
 **Plugin identifier**       | intranda_step_create_structure_from_filenames
 **Plugin type**             | step
 **Licence**                 | GPL 2.0 or newer
-**Documentation (German)**  | https://docs.goobi.io/workflow-plugins/v/eng/step/goobi-plugin-step-create-structure-from-filenames
-**Documentation (English)** | https://docs.goobi.io/workflow-plugins/v/ger/step/goobi-plugin-step-create-structure-from-filenames
+**Documentation (German)**  | https://docs.goobi.io/workflow-plugins/v/ger/step/goobi-plugin-step-create-structure-from-filenames
+**Documentation (English)** | https://docs.goobi.io/workflow-plugins/v/eng/step/goobi-plugin-step-create-structure-from-filenames
 
 ## Goobi details
 
