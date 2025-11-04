@@ -3,6 +3,10 @@ title: Structure data acquisition of images based on file names
 identifier: intranda_step_create_structure_from_filenames
 description: Step plugin to capture structural data from images
 published: false
+keywords:
+    - Goobi workflow
+    - Plugin
+    - Step Plugin
 ---
 
 ## Introduction

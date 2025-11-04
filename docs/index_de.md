@@ -3,6 +3,10 @@ title: Strukturdatenerfassung von Bildern auf Basis der Dateinamen
 identifier: intranda_step_create_structure_from_filenames
 description: Step Plugin um Strukturdaten von Bildern zu erfassen
 published: false
+keywords:
+    - Goobi workflow
+    - Plugin
+    - Step Plugin
 ---
 
 ## Einführung
