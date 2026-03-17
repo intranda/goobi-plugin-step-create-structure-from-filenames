@@ -13,7 +13,7 @@
         <step>*</step>
         
         <!-- Configuration for structure element type -->
-        <type>*</type>
+        <type>Chapter</type>
         
         <!-- Configuration for filename string -->
         <infix>_backprint</infix>
