@@ -23,7 +23,10 @@ import java.util.ArrayList;
  */
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
@@ -47,9 +50,14 @@ import net.xeoh.plugins.base.annotations.PluginImplementation;
 import ugh.dl.ContentFile;
 import ugh.dl.DigitalDocument;
 import ugh.dl.DocStruct;
+import ugh.dl.FileSet;
 import ugh.dl.Fileformat;
 import ugh.dl.Metadata;
 import ugh.dl.Prefs;
+import ugh.dl.Reference;
+import ugh.exceptions.MetadataTypeNotAllowedException;
+import ugh.exceptions.TypeNotAllowedAsChildException;
+import ugh.exceptions.TypeNotAllowedForParentException;
 
 @PluginImplementation
 @Log4j2
@@ -61,6 +69,7 @@ public class CreateStructureFromFilenamesStepPlugin implements IStepPluginVersio
     private Step step;
     private String type;
     private String infix;
+    private boolean overwrite;
     private String returnPath;
     private Process process;
     private XMLConfiguration config;
@@ -75,6 +84,7 @@ public class CreateStructureFromFilenamesStepPlugin implements IStepPluginVersio
         SubnodeConfiguration myconfig = ConfigPlugins.getProjectAndStepConfig(title, step);
         type = myconfig.getString("type", "Chapter");
         infix = myconfig.getString("infix", "_backprint");
+        overwrite = myconfig.getBoolean("overwrite", false);
         log.info("CreateStructureFromFilenames step plugin initialized");
     }
 
@@ -183,44 +193,10 @@ public class CreateStructureFromFilenamesStepPlugin implements IStepPluginVersio
             Fileformat fileformat = process.readMetadataFile();
             DigitalDocument dd = fileformat.getDigitalDocument();
 
-            // Find the structure elements to be updated
-            DocStruct topstruct = dd.getLogicalDocStruct();
-
-            // Go through the TreeMap and add each key as a child
-            for (String key : treeMap.keySet()) {
-                DocStruct childStruct = dd.createDocStruct(prefs.getDocStrctTypeByName(type));
-                topstruct.addChild(childStruct);
-
-                // Go through all files
-                List<String> associatedFiles = treeMap.get(key);
-                for (String fileName : associatedFiles) {
-                    // Get the file name
-                    File imageFile = new File(foldername, fileName);
-
-                    // Create a new structure element for the page
-                    DocStruct dsPage = dd.createDocStruct(prefs.getDocStrctTypeByName("page"));
-                    dd.getPhysicalDocStruct().addChild(dsPage);
-
-                    // Add physical page information
-                    Metadata metaPhysPageNumber = new Metadata(prefs.getMetadataTypeByName("physPageNumber"));
-                    metaPhysPageNumber.setValue(String.valueOf(dd.getPhysicalDocStruct().getAllChildren().size()));
-                    dsPage.addMetadata(metaPhysPageNumber);
-
-                    // Add logical page information
-                    Metadata metaLogPageNumber = new Metadata(prefs.getMetadataTypeByName("logicalPageNumber"));
-                    metaLogPageNumber.setValue(String.valueOf(dd.getPhysicalDocStruct().getAllChildren().size()));
-                    dsPage.addMetadata(metaLogPageNumber);
-
-                    // Create and add a content file
-                    ContentFile cf = new ContentFile();
-                    cf.setMimetype("image/tiff");
-                    cf.setLocation(imageFile.getAbsolutePath());
-                    dsPage.addContentFile(cf);
-
-                    // Link the physical and logical structure elements
-                    dd.getLogicalDocStruct().addReferenceTo(dsPage, "logical_physical");
-                    childStruct.addReferenceTo(dsPage, "logical_physical");
-                }
+            if (overwrite) {
+                this.overwriteMetadata(dd, treeMap, prefs, foldername);
+            } else {
+                this.mergeMetadata(dd, treeMap, prefs, foldername);
             }
 
             process.writeMetadataFile(fileformat);
@@ -240,6 +216,111 @@ public class CreateStructureFromFilenamesStepPlugin implements IStepPluginVersio
                     "CreateStructureFromFilenames plugin successfully processed filenames and updated the document structure.");
         }
         return PluginReturnValue.FINISH;
+    }
+
+    private void mergeMetadata(DigitalDocument dd, TreeMap<String, List<String>> treeMap, Prefs prefs, String foldername)
+            throws TypeNotAllowedForParentException, TypeNotAllowedAsChildException, MetadataTypeNotAllowedException {
+        DocStruct topstruct = dd.getLogicalDocStruct();
+        DocStruct physicalDocStruct = dd.getPhysicalDocStruct();
+
+        // Collect all file paths that already exist in the physical structure
+        Set<String> existingFilePaths = new HashSet<>();
+        if (physicalDocStruct.getAllChildren() != null) {
+            for (DocStruct page : physicalDocStruct.getAllChildren()) {
+                if (page.getAllContentFiles() != null) {
+                    for (ContentFile cf : page.getAllContentFiles()) {
+                        existingFilePaths.add(cf.getLocation());
+                    }
+                }
+            }
+        }
+
+        // Add only groups whose files are not yet present in the physical structure
+        for (Map.Entry<String, List<String>> entry : treeMap.entrySet()) {
+            boolean groupAlreadyExists = entry.getValue().stream()
+                    .anyMatch(fileName -> existingFilePaths.contains(new File(foldername, fileName).getAbsolutePath()));
+            if (!groupAlreadyExists) {
+                DocStruct childStruct = dd.createDocStruct(prefs.getDocStrctTypeByName(type));
+                topstruct.addChild(childStruct);
+                for (String fileName : entry.getValue()) {
+                    addFileToMetadata(dd, prefs, foldername, fileName, childStruct);
+                }
+            }
+        }
+    }
+
+    private void overwriteMetadata(DigitalDocument dd, TreeMap<String, List<String>> treeMap, Prefs prefs, String foldername)
+            throws TypeNotAllowedForParentException, TypeNotAllowedAsChildException, MetadataTypeNotAllowedException {
+        DocStruct topstruct = dd.getLogicalDocStruct();
+        DocStruct physicalDocStruct = dd.getPhysicalDocStruct();
+
+        // Remove all references from topstruct to physical pages
+        if (topstruct.getAllToReferences() != null) {
+            for (Reference ref : new ArrayList<>(topstruct.getAllToReferences())) {
+                topstruct.removeReferenceTo(ref.getTarget());
+            }
+        }
+
+        // Remove all logical children (chapters)
+        if (topstruct.getAllChildren() != null) {
+            for (DocStruct child : new ArrayList<>(topstruct.getAllChildren())) {
+                topstruct.removeChild(child);
+            }
+        }
+
+        // Remove all physical pages
+        if (physicalDocStruct.getAllChildren() != null) {
+            for (DocStruct page : new ArrayList<>(physicalDocStruct.getAllChildren())) {
+                physicalDocStruct.removeChild(page);
+            }
+        }
+
+        // Clear the entire FileSet to remove all ContentFile entries, including unreferenced ones
+        FileSet fileSet = dd.getFileSet();
+        if (fileSet.getAllFiles() != null) {
+            for (ContentFile cf : new ArrayList<>(fileSet.getAllFiles())) {
+                fileSet.removeFile(cf);
+            }
+        }
+
+        // Rebuild structure from treeMap
+        for (Map.Entry<String, List<String>> entry : treeMap.entrySet()) {
+            DocStruct childStruct = dd.createDocStruct(prefs.getDocStrctTypeByName(type));
+            topstruct.addChild(childStruct);
+            for (String fileName : entry.getValue()) {
+                addFileToMetadata(dd, prefs, foldername, fileName, childStruct);
+            }
+        }
+    }
+
+    private static void addFileToMetadata(DigitalDocument dd, Prefs prefs, String foldername, String fileName, DocStruct childStruct)
+            throws TypeNotAllowedForParentException, TypeNotAllowedAsChildException, MetadataTypeNotAllowedException {
+        // Get the file name
+        File imageFile = new File(foldername, fileName);
+
+        // Create a new structure element for the page
+        DocStruct dsPage = dd.createDocStruct(prefs.getDocStrctTypeByName("page"));
+        dd.getPhysicalDocStruct().addChild(dsPage);
+
+        // Add physical page information
+        Metadata metaPhysPageNumber = new Metadata(prefs.getMetadataTypeByName("physPageNumber"));
+        metaPhysPageNumber.setValue(String.valueOf(dd.getPhysicalDocStruct().getAllChildren().size()));
+        dsPage.addMetadata(metaPhysPageNumber);
+
+        // Add logical page information
+        Metadata metaLogPageNumber = new Metadata(prefs.getMetadataTypeByName("logicalPageNumber"));
+        metaLogPageNumber.setValue(String.valueOf(dd.getPhysicalDocStruct().getAllChildren().size()));
+        dsPage.addMetadata(metaLogPageNumber);
+
+        // Create and add a content file
+        ContentFile cf = new ContentFile();
+        cf.setMimetype("image/tiff");
+        cf.setLocation(imageFile.getAbsolutePath());
+        dsPage.addContentFile(cf);
+
+        // Link the physical and logical structure elements
+        dd.getLogicalDocStruct().addReferenceTo(dsPage, "logical_physical");
+        childStruct.addReferenceTo(dsPage, "logical_physical");
     }
 
 }

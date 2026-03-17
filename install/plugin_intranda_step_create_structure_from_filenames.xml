@@ -13,10 +13,13 @@
         <step>*</step>
         
         <!-- Configuration for structure element type -->
-        <type>Chapter</type>
+        <type>*</type>
         
         <!-- Configuration for filename string -->
         <infix>_backprint</infix>
+        <!--    if true overwrites the existing Images and creates new entries.
+                If false add new entries and don't touch old entries. -->
+        <overwrite>false</overwrite>
     </config>
 
 </config_plugin>
