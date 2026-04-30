@@ -36,7 +36,6 @@ import de.sub.goobi.helper.Helper;
 import de.sub.goobi.helper.VariableReplacer;
 import de.sub.goobi.helper.enums.StepStatus;
 import de.sub.goobi.metadaten.MetadatenHelper;
-import de.sub.goobi.persistence.managers.MetadataManager;
 import de.sub.goobi.persistence.managers.ProcessManager;
 import ugh.dl.ContentFile;
 import ugh.dl.DigitalDocument;
@@ -49,7 +48,7 @@ import ugh.fileformats.mets.MetsMods;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ MetadatenHelper.class, VariableReplacer.class, ConfigurationHelper.class, ProcessManager.class,
-        MetadataManager.class, Helper.class })
+        Process.class, Helper.class })
 @PowerMockIgnore({ "javax.management.*", "javax.xml.*", "org.xml.*", "org.w3c.*", "javax.net.ssl.*", "jdk.internal.reflect.*" })
 public class CreateStructureFromFilenamesPluginTest {
 
@@ -274,17 +273,8 @@ public class CreateStructureFromFilenamesPluginTest {
         PowerMock.mockStatic(MetadatenHelper.class);
         EasyMock.expect(MetadatenHelper.getMetaFileType(EasyMock.anyString())).andReturn("mets").anyTimes();
         EasyMock.expect(MetadatenHelper.getFileformatByName(EasyMock.anyString(), EasyMock.anyObject())).andReturn(ff).anyTimes();
-        EasyMock.expect(MetadatenHelper.getMetadataOfFileformat(EasyMock.anyObject(), EasyMock.anyBoolean()))
-                .andReturn(Collections.emptyMap())
-                .anyTimes();
         PowerMock.replay(MetadatenHelper.class);
 
-        PowerMock.mockStatic(MetadataManager.class);
-        MetadataManager.updateMetadata(EasyMock.anyInt(), EasyMock.anyObject());
-        EasyMock.expectLastCall().anyTimes();
-        MetadataManager.updateJSONMetadata(EasyMock.anyInt(), EasyMock.anyObject());
-        EasyMock.expectLastCall().anyTimes();
-        PowerMock.replay(MetadataManager.class);
         PowerMock.replay(ConfigurationHelper.class);
 
         PowerMock.mockStaticPartial(Helper.class, "addMessageToProcessJournal");
@@ -302,13 +292,21 @@ public class CreateStructureFromFilenamesPluginTest {
         EasyMock.expect(ruleset.getPreferences()).andReturn(prefs).anyTimes();
         PowerMock.replay(ruleset);
 
+        EasyMock.expect(process.writeMetadataFile(EasyMock.anyObject(Fileformat.class)))
+                .andAnswer(() -> {
+                    Fileformat captured = (Fileformat) EasyMock.getCurrentArguments()[0];
+                    captured.write(processDirectory.getAbsolutePath() + File.separator + "meta.xml");
+                    return true;
+                })
+                .anyTimes();
+        PowerMock.replay(process);
     }
 
-    public Process getProcess() {
+    public Process getProcess() throws Exception {
         Project project = new Project();
         project.setTitel("CreateStructureFromFilenamesProject");
 
-        Process process = new Process();
+        Process process = PowerMock.createPartialMockAndInvokeDefaultConstructor(Process.class, "writeMetadataFile");
         process.setTitel("00469418X");
         process.setProjekt(project);
         process.setId(1);
