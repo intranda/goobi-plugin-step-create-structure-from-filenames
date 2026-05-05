@@ -32,6 +32,7 @@ The plugin works as follows within the correctly configured workflow:
 
 * If the plugin has been called within the workflow, it runs through all images in the master folder and creates a new structure element for each image.
 * However, if an image contains a sequence of letters defined in the configuration file in the file name, then this image is added to the last structure element.
+* The `overwrite` parameter controls whether an existing structure is replaced on a subsequent run (`true`) or preserved while only missing groups are appended (`false`). This prevents duplicate entries when the plugin is executed more than once.
 
 ## Configuration
 The plugin is configured in the file `plugin_intranda_step_create_structure_from_filenames.xml` as shown here:
@@ -44,4 +45,5 @@ Parameter               | Explanation
 ------------------------|------------------------------------
 type           | The type for the structure element to be created |
 infix          | The sequence of letters that can appear in the file name, whereby the image is appended to the previous structure element|
+overwrite      | Controls the behaviour when the plugin is run again. If `true`, all existing structure elements, pages and file entries are removed and completely rebuilt from the master folder. If `false` (default), existing entries are kept and only groups whose files are not yet present in the physical structure are added. This avoids duplicate entries on repeated runs. |
 

@@ -32,6 +32,7 @@ Die Arbeitsweise des Plugins innerhalb des korrekt konfigurierten Workflows sieh
 
 * Wenn das Plugin innerhalb des Workflows aufgerufen wurde, durchläuft es alle Bilder des Master-Ordners und legt für jedes Bild ein neues Strukturelement an.
 * Enthält ein Bild im Dateinamen jedoch einen in der Konfigurationsdatei definierten Buchstabenfolge, dann wird dieses Bild dem letzten Strukturelement hinzugefügt.
+* Über den Parameter `overwrite` kann gesteuert werden, ob bei einem erneuten Lauf bereits vorhandene Strukturelemente und Seiten ersetzt (`true`) oder beibehalten und nur fehlende Gruppen ergänzt werden (`false`). Dies verhindert doppelte Einträge, wenn das Plugin mehrfach ausgeführt wird.
 
 ## Konfiguration
 Die Konfiguration des Plugins erfolgt in der Datei `plugin_intranda_step_create_structure_from_filenames.xml` wie hier aufgezeigt:
@@ -44,4 +45,5 @@ Parameter               | Erläuterung
 ------------------------|------------------------------------
 type           | Der Typ für das Strukturelement das angelegt werden soll |
 infix          | Die Buchstabenfolge, die im Dateinamen vorkommen kann, wodurch das Bild an das vorherige Strukturelement gehängt wird|
+overwrite      | Steuert das Verhalten bei einem erneuten Lauf. Bei `true` werden alle vorhandenen Strukturelemente, Seiten und Dateieinträge entfernt und vollständig neu aus dem Master-Ordner aufgebaut. Bei `false` (Standard) werden vorhandene Einträge beibehalten und nur Gruppen hinzugefügt, deren Dateien noch nicht in der physischen Struktur vorhanden sind. Dadurch werden doppelte Einträge bei mehrfacher Ausführung vermieden. |
 
